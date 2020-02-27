@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react'
-import Form from './components/Form'
+import UserForm from './components/UserForm'
 
 function App() {
   return (
     <Fragment>
-      <Form />
+      <UserForm />
     </Fragment>
   );
 }
