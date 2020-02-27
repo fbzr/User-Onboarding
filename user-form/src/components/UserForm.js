@@ -17,7 +17,6 @@ import { useEffect } from 'react'
 const FormComponent = (props) => {
     const [users, setUsers] = useState([]);
 
-    console.log(props)
     const {
         values,
         errors,
@@ -25,8 +24,6 @@ const FormComponent = (props) => {
         status,
         isSubmitting
     } = props;
-
-    console.log(props);
 
     useEffect(() => {
         status && setUsers(users => [...users, status]);
@@ -46,7 +43,7 @@ const FormComponent = (props) => {
 
             <label htmlFor='name'>Agree with terms of Service:</label>
             <Field type='checkbox' name='terms' id='terms' label='test' />
-            
+
             <Button disabled={isSubmitting} type='submit'>Submit</Button>
 
             {/* Check if input was touched and show error message */}
@@ -55,9 +52,6 @@ const FormComponent = (props) => {
             )}
             {touched.email && errors.email && (
                 <p>{errors.email}</p>
-            )}
-            {touched.password && errors.password && (
-                <p>{errors.password}</p>
             )}
             {touched.password && errors.password && (
                 <p>{errors.password}</p>
@@ -92,7 +86,7 @@ const UserForm = withFormik({
     validationSchema: yup.object().shape({
         name: yup.string().min(2, 'Name needs minimum 2 characters').required('Name required'),
         email: yup.string().email().required('Email required'),
-        password: yup.string().required('Password required'),
+        password: yup.string().min(8, 'Password must have at least 8 characters').required('Password required'),
         terms: yup.bool().oneOf([true], 'Must agree with Terms of Service')
     }),
     handleSubmit: async (data, {resetForm, setSubmitting, setStatus}) => {
