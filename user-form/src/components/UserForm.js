@@ -35,10 +35,18 @@ const FormComponent = (props) => {
 
     return (
         <Form>
+            <label htmlFor='name'>Name:</label>
             <Field type='text' name='name' id='name' placeholder='Enter your name' />
+
+            <label htmlFor='email'>Email:</label>
             <Field type='email' name='email' id='email' placeholder='Enter your email' />
+
+            <label htmlFor='password'>Password:</label>
             <Field type='password' name='password' id='password' placeholder='Enter your password' />
-            <Field type='checkbox' name='terms' id='terms' />
+
+            <label htmlFor='name'>Agree with terms of Service:</label>
+            <Field type='checkbox' name='terms' id='terms' label='test' />
+            
             <Button disabled={isSubmitting} type='submit'>Submit</Button>
 
             {/* Check if input was touched and show error message */}
@@ -54,7 +62,7 @@ const FormComponent = (props) => {
             {touched.password && errors.password && (
                 <p>{errors.password}</p>
             )}
-            {errors.terms && (
+            {touched.terms && (
                 <p>{errors.terms}</p>
             )}
 
