@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { withFormik, Form, Field, useField } from 'formik'
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField, Checkbox, FormControlLabel, FormControl, FormHelperText } from '@material-ui/core'
 import axios from 'axios'
 
 import * as yup from 'yup'
@@ -20,15 +20,26 @@ const MuiFormikTextField = ({ label, ...props }) => {
     )
 }
 
+// Material UI Checkbox with access to Formik Field's props and methods 
+const MuiFormikCheckbox = ({ label, errorMsg, ...props }) => {
+    const [field, meta] = useField(props);
+    return (
+        <FormControl error={meta.error && meta.touched} >
+            <FormControlLabel 
+                control={ <Checkbox {...field} {...props} checked={field.value} /> }
+                label={label}
+            />
+            <FormHelperText>{(meta.error && meta.touched) && errorMsg}</FormHelperText>
+        </FormControl>
+    )
+}
+
 const FormComponent = (props) => {
     const [users, setUsers] = useState([]);
 
-    const {
-        values,
-        errors,
-        status,
-        isSubmitting
-    } = props;
+    console.log(props);
+
+    const { status, isSubmitting } = props;
 
     useEffect(() => {
         status && setUsers(users => [...users, status]);
@@ -41,10 +52,9 @@ const FormComponent = (props) => {
             <MuiFormikTextField name='email' id='email' type='email' label='Email' />
             <MuiFormikTextField name='password' id='password' type='password' label='Password' />
 
-            <label htmlFor='name'>Agree with terms of Service:</label>
-            <Field type='checkbox' name='terms' id='terms' label='test' />
-
-            <Button type='submit'>Submit</Button>
+            <MuiFormikCheckbox name='terms' id='terms' errorMsg='Must agree with Terms of Service' label='Agree with Terms of Service' />
+            
+            <Button disabled={isSubmitting} type='submit'>Submit</Button>
 
             {/* Map through users state and display infos */}
             { users.map(user => (
@@ -54,9 +64,6 @@ const FormComponent = (props) => {
                     <li>Password: {user.password}</li>
                 </ul>
             )) }
-
-            <pre>{JSON.stringify(values, null, 2)}</pre>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
         </Form>   
     )
 }
