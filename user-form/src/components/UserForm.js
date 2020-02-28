@@ -1,26 +1,31 @@
 import React, { useState } from 'react'
-import { withFormik, Form, Field } from 'formik'
-import { Button } from '@material-ui/core'
+import { withFormik, Form, Field, useField } from 'formik'
+import { Button, TextField } from '@material-ui/core'
 import axios from 'axios'
 
 import * as yup from 'yup'
 import { useEffect } from 'react'
 
-/*
- Name
- Email
- Password
- Terms of Service (checkbox)
- A Submit button to send our form data to the server.
+// Material UI TextField with access to Formik Field's props and methods 
+const MuiFormikTextField = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
+    return (
+        <TextField 
+            {...field}
+            {...props}
+            label={label}
+            error={meta.error && meta.touched}
+            helperText={ (meta.error && meta.touched) && meta.error }
+        />         
+    )
+}
 
-*/
 const FormComponent = (props) => {
     const [users, setUsers] = useState([]);
 
     const {
         values,
         errors,
-        touched,
         status,
         isSubmitting
     } = props;
@@ -32,33 +37,14 @@ const FormComponent = (props) => {
 
     return (
         <Form>
-            <label htmlFor='name'>Name:</label>
-            <Field type='text' name='name' id='name' placeholder='Enter your name' />
-
-            <label htmlFor='email'>Email:</label>
-            <Field type='email' name='email' id='email' placeholder='Enter your email' />
-
-            <label htmlFor='password'>Password:</label>
-            <Field type='password' name='password' id='password' placeholder='Enter your password' />
+            <MuiFormikTextField name='name' id='name' label='Name' />
+            <MuiFormikTextField name='email' id='email' type='email' label='Email' />
+            <MuiFormikTextField name='password' id='password' type='password' label='Password' />
 
             <label htmlFor='name'>Agree with terms of Service:</label>
             <Field type='checkbox' name='terms' id='terms' label='test' />
 
-            <Button disabled={isSubmitting} type='submit'>Submit</Button>
-
-            {/* Check if input was touched and show error message */}
-            {touched.name && errors.name && (
-                <p>{errors.name}</p>
-            )}
-            {touched.email && errors.email && (
-                <p>{errors.email}</p>
-            )}
-            {touched.password && errors.password && (
-                <p>{errors.password}</p>
-            )}
-            {touched.terms && (
-                <p>{errors.terms}</p>
-            )}
+            <Button type='submit'>Submit</Button>
 
             {/* Map through users state and display infos */}
             { users.map(user => (
@@ -78,17 +64,19 @@ const FormComponent = (props) => {
 const UserForm = withFormik({
     // Initialize "formik states"
     mapPropsToValues: (props) => ({
-        name: props.name || '',
-        email: props.email || '',
-        password: props.password || '',
+        name: '',
+        email:  '',
+        password: '',
         terms: false
     }),
+    // Setup validation with YUP
     validationSchema: yup.object().shape({
         name: yup.string().min(2, 'Name needs minimum 2 characters').required('Name required'),
         email: yup.string().email().required('Email required'),
         password: yup.string().min(8, 'Password must have at least 8 characters').required('Password required'),
         terms: yup.bool().oneOf([true], 'Must agree with Terms of Service')
     }),
+    // Handle submit
     handleSubmit: async (data, {resetForm, setSubmitting, setStatus}) => {
         try {
             setSubmitting(true)
